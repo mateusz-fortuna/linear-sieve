@@ -6,55 +6,77 @@ namespace zaliczenie2
 {
     class LinearSieve
     {
-        private void RemoveInt(int[] arr, int i)
+        private List<int> integers = new List<int>();
+        private List<int> removedIntegers = new List<int>();
+
+        public LinearSieve(int listLength)
         {
-            arr.Where(val => val != i);
+            for (int i = 0; i < listLength; i++)
+            {
+                integers.Add(i + 2);
+            }
         }
 
-        private int GetNextInt(int[] arr, int i)
+        private static bool ExistsInList<T>(List<T> list, T el)
         {
-            return Array.IndexOf(arr, i) + 1;
+            return list.IndexOf(el) != -1;
         }
 
-        public List<int> GetResult(int[] numbers)
+        private static int GetNextInt(List<int> list, int i)
         {
-            if (numbers[0] < 2)
-                throw new ArgumentException("The first integer of the array cannot be smaller than two.");
+            return list[list.IndexOf(i) + 1];
+        }
 
-            if (numbers[1] <= numbers[0] || numbers[1] - numbers[0] != 1)
-                throw new ArgumentException("The list of integers is not consecutive.");
+        private static int GetNextNotRemovedInt(
+            List<int> removedIntegers,
+            List<int> integers,
+            int i
+        )
+        {
+            int index = integers.IndexOf(i);
+            int nextIndex = index + 1;
+            int nextInt = integers[nextIndex];
 
+            while (ExistsInList<int>(removedIntegers, nextInt))
+            {
+                nextIndex++;
+            }
+
+            return nextInt;
+        }
+
+        public List<int> GetResult()
+        {
             List<int> result = new List<int>();
-            int p = numbers[0];
+            int p = integers[0];
             int q;
             int x;
 
-            while (p * p <= numbers[^1])
+            while (p * p <= integers[^1])
             {
                 q = p;
 
-                while (p * q <= numbers[^1])
+                while (p * q <= integers[^1])
                 {
                     x = p * q;
 
-                    while (x <= numbers[^1])
+                    while (x <= integers[^1])
                     {
-                        RemoveInt(numbers, x);
+                        integers.Remove(x);
+                        removedIntegers.Add(x);
                         x = p * x;
                     }
 
-                    q = GetNextInt(numbers, q);
+                    q = GetNextNotRemovedInt(removedIntegers, integers, q);
                 }
 
-                p = GetNextInt(numbers, p);
+                p = GetNextInt(integers, p);
             }
 
-            // Return numbers from 1 to n that exist in array
-
-            for (int i = 0; i < numbers.Length; i++)
+            for (int i = 2; i < integers[^1]; i++)
             {
-                if (Array.IndexOf(numbers, i) != -1)
-                    result.Append(i);
+                if (ExistsInList(integers, i))
+                    result.Add(i);
             }
 
             return result;
