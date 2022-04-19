@@ -12,6 +12,9 @@ namespace zaliczenie2
             Console.WriteLine("How many numbers would you like to process?");
             int numbersCount = Convert.ToInt32(Console.ReadLine());
 
+            string fileName = "primeNumbers" + Convert.ToString(numbersCount) + ".txt";
+            using StreamWriter file = new StreamWriter(@fileName);
+
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
@@ -19,16 +22,7 @@ namespace zaliczenie2
 
             sw.Stop();
 
-            string fileName = "linearSieveResults" + Convert.ToString(numbersCount) + ".txt";
-            StreamWriter file = new StreamWriter(@fileName);
-
-            primeNumbers.ForEach(
-                n =>
-                {
-                    file.WriteLine(Convert.ToString(n));
-                }
-            );
-
+            primeNumbers.ForEach(n => file.WriteLine(Convert.ToString(n)));
             Console.WriteLine("Time of the execution: " + sw.ElapsedMilliseconds + " ms");
         }
     }

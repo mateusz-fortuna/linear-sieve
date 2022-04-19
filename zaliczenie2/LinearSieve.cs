@@ -1,85 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace zaliczenie2
 {
     class LinearSieve
     {
-        private List<int> integers = new List<int>();
-        private List<int> removedIntegers = new List<int>();
+        List<int> primeNumbers = new List<int>();
+        List<int> minimumPrimeFactors = new List<int>();
+        int listLength = 0;
 
         public LinearSieve(int listLength)
         {
-            for (int i = 0; i < listLength; i++)
+            for (int i = 0; i < listLength + 1; i++)
             {
-                integers.Add(i + 2);
-            }
-        }
-
-        private static bool ExistsInList<T>(List<T> list, T el)
-        {
-            return list.IndexOf(el) != -1;
-        }
-
-        private static int GetNextInt(List<int> list, int i)
-        {
-            return list[list.IndexOf(i) + 1];
-        }
-
-        private static int GetNextNotRemovedInt(
-            List<int> removedIntegers,
-            List<int> integers,
-            int i
-        )
-        {
-            int index = integers.IndexOf(i);
-            int nextIndex = index + 1;
-            int nextInt = integers[nextIndex];
-
-            while (ExistsInList<int>(removedIntegers, nextInt))
-            {
-                nextIndex++;
+                minimumPrimeFactors.Add(0);
             }
 
-            return nextInt;
+            this.listLength = listLength;
         }
 
         public List<int> GetResult()
         {
-            List<int> result = new List<int>();
-            int p = integers[0];
-            int q;
-            int x;
-
-            while (p * p <= integers[^1])
+            for (int i = 2; i < listLength; i++)
             {
-                q = p;
-
-                while (p * q <= integers[^1])
+                if (minimumPrimeFactors[i] == 0)
                 {
-                    x = p * q;
-
-                    while (x <= integers[^1])
-                    {
-                        integers.Remove(x);
-                        removedIntegers.Add(x);
-                        x = p * x;
-                    }
-
-                    q = GetNextNotRemovedInt(removedIntegers, integers, q);
+                    minimumPrimeFactors[i] = i;
+                    primeNumbers.Add(i);
                 }
 
-                p = GetNextInt(integers, p);
+                for (
+                    int j = 0;
+                    j < primeNumbers.Count
+                        && primeNumbers[j] <= minimumPrimeFactors[i]
+                        && i * primeNumbers[j] <= listLength;
+                    j++
+                )
+                {
+                    minimumPrimeFactors[i * primeNumbers[j]] = primeNumbers[j];
+                }
             }
 
-            for (int i = 2; i < integers[^1]; i++)
-            {
-                if (ExistsInList(integers, i))
-                    result.Add(i);
-            }
-
-            return result;
+            return primeNumbers;
         }
     }
 }
